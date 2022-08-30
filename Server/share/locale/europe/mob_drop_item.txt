@@ -1,0 +1,72 @@
+###############################################################################
+# Reference: https://it-wiki.metin2.gameforge.com/index.php/Tesoro_di_Idra
+# Note: Before inserting this group into your original file, please check that
+# you have the items below.
+Group	HydraTreasureChest
+{
+	Mob	3965
+	Type	drop
+	level_limit	120
+	1	20000	1	0.9 -- Devil's Horn Armour+0
+	2	20250	1	0.9 -- Devil's Horn Armour+0
+	3	20500	1	0.9 -- Dragon Rider Suit+0
+	4	20750	1	0.9 -- Golden Clothing+0
+	5	21090	1	0.9 -- Warlord Armour+0
+	6	54705	1	1.0 -- Hydra's Chest
+	7	54705	1	0.8 -- Hydra's Chest
+	8	54705	1	0.6 -- Hydra's Chest
+	9	54705	1	0.4 -- Hydra's Chest
+	10	54705	1	0.2 -- Hydra's Chest
+	11	55410	1	0.8 -- Nessie Egg
+	12	70303	1	1.0 -- Hydran Ring
+	13	70303	1	0.8 -- Hydran Ring
+	14	70303	1	0.6 -- Hydran Ring
+	15	70303	1	0.4 -- Hydran Ring
+	16	70303	1	0.2 -- Hydran Ring
+	17	55003	1	100 -- Young Pet Book
+	18	55004	1	100 -- Wild Pet Book
+	19	55005	1	100 -- Valiant Pet Book
+	20	50113	1	0.5 -- Green Ebony Box
+	21	50114	1	0.5 -- Blue Ebony Box
+	22	50115	1	0.5 -- Crimson Ebony Box
+	23	27992	1	100 -- White Pearl
+	24	27993	1	100 -- Blue Pearl
+	25	27994	1	100 -- Blood-Red Pearl
+	26	39028	1	0.6 -- Enchant Item
+	27	39029	1	0.6 -- Reinforce Item
+	28	39004	1	0.2 -- Blessing Marble
+	29	25040	1	1.0 -- Blessing Scroll
+	30	71015	1	50 -- Anello dell'esperienza
+	31	27987	1	100 -- Clam
+	32	50121	1	1.0 -- Iron Box
+	33	50121	1	0.5 -- Iron Box
+	34	70037	1	50 -- Book of Forgetfulness
+	35	72058	1	100 -- Spirit Stone Bundle
+	36	72058	1	100 -- Spirit Stone Bundle
+	37	72058	1	100 -- Spirit Stone Bundle
+	38	72058	1	100 -- Spirit Stone Bundle
+	39	72058	1	100 -- Spirit Stone Bundle
+	40	72058	1	100 -- Spirit Stone Bundle
+	41	72058	1	100 -- Spirit Stone Bundle
+	42	50926	50	100 -- Glimmerstone
+	43	50926	50	100 -- Glimmerstone
+	44	50926	50	100 -- Glimmerstone
+	45	50926	50	100 -- Glimmerstone
+	46	50926	50	100 -- Glimmerstone
+	47	50926	50	0.5 -- Glimmerstone
+	48	50926	50	0.5 -- Glimmerstone
+	49	50926	50	0.5 -- Glimmerstone
+	50	50094	10	25 -- Catfish Sushi
+	51	50913	10	75 -- Salmon Sushi
+	52	50704	10	60 -- Gango Root
+	53	50705	10	60 -- Lilac
+	54	50706	10	60 -- Tue Fungus
+	55	50707	10	60 -- Alpine Rose
+	56	50708	10	60 -- Mulberry
+	57	50056	10	60 -- Red Ginseng
+	58	31216	1	10 -- Crude Metal Sheet
+	59	90015	1	5 -- Foundation Stone+
+	60	90016	1	5 -- Trunk+
+	61	90017	1	5 -- Plywood+
+	62	28046	1	10 -- Demon Stone+0
+}

@@ -1,0 +1,5 @@
+//type	cx	cy	sx	sy	z	dir	time	percent	count	vnum
+m	405	418	0	0	0	0	20s	100	1	3950
+m	405	385	0	0	0	0	20s	100	1	3950
+m	364	418	0	0	0	0	20s	100	1	3950
+m	364	385	0	0	0	0	20s	100	1	3950

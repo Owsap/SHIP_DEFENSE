@@ -1,0 +1,297 @@
+--[[
+* Filename: ship_defense.quest
+* Title: Ship Defense
+* Description: Ship Defense Instance Manager
+* Author: Owsap
+* Date: 2022.08.05
+*
+* Discord: Owsap#7928
+* Skype: owsap.
+*
+* Web: https://owsap.dev/
+* GitHub: https://github.com/Owsap
+]]
+
+define FISHER_MAN 9009
+define ENTRY_MAP_INDEX 301
+define DUNGEON_MAP_INDEX 358
+define SHIP_MAST 20434
+define SHIP_WHEEL 20436
+define WOOD_REPAIR 20437
+define REPAIR_WOOD_ITEM 31107
+define LEVEL_CUT 90
+define TICKET_GROUP 10033
+define NEED_MAIN_QUEST_MELEY_TRAIL 0
+define PORTAL 3949
+
+quest ship_defense begin
+	state start begin
+		function in_dungeon(idx)
+			return idx >= DUNGEON_MAP_INDEX * 10000 and idx < (DUNGEON_MAP_INDEX + 1) * 10000
+		end
+
+		function main_quest_complete() -- Check past missions
+			if NEED_MAIN_QUEST_MELEY_TRAIL > 0 then
+				local main_quest = pc.getf("main_quest_meley_trail", "__status")
+				if main_quest != nil and main_quest == main_quest_meley_trail.__COMPLETE__ then
+					return true
+				end
+				return false
+			end
+			return true
+		end
+
+		when login begin
+			if pc.get_map_index() == DUNGEON_MAP_INDEX then
+				-- Check if the ship defense is created or running.
+				if ship_defense_mgr.is_created() or ship_defense_mgr.is_running() then
+					ship_defense_mgr.join()
+				else
+					ship_defense_mgr.leave()
+				end
+			end
+		end
+
+		when FISHER_MAN.chat."All Aboard!" with pc.get_map_index() == ENTRY_MAP_INDEX begin
+			if game.get_event_flag("ship_defense") != 1 then
+				say("The Ship Defense will be available soon.")
+				return
+			end
+
+			say("Do you want to start your journey in pursuit of[ENTER]Meley now?")
+			if select("Yes", "No") == 1 then
+
+				-- Check if the player is mounting.
+				if pc.is_mount() then
+					say("Mounts are not allowed on board. Dismount before[ENTER]you board the ship.")
+					return
+				end
+
+				if ship_defense_mgr.need_party() then
+					-- Check if the player has a party.
+					if not party.is_party() then
+						syschat("You can only start the journey with a group.")
+						return
+					end
+
+					-- Check if the ship defense is created.
+					if ship_defense_mgr.is_created() or ship_defense_mgr.is_running() then
+						ship_defense_mgr.join()
+						return
+					end
+
+					-- Check if the player is a party leader.
+					if not party.is_leader() then
+						say("Only the group leader can register.")
+						return
+					end
+
+					local pids = { party.get_member_pids() }
+					if party.get_near_count() < table.getn(pids) then
+						say("At least one player is too far from the group.")
+						return
+					end
+				else
+					-- Check if the ship defense is created.
+					if ship_defense_mgr.is_created() or ship_defense_mgr.is_running() then
+						ship_defense_mgr.join()
+						return
+					end
+				end
+
+				ship_defense_mgr.create()
+			end
+		end
+
+		when SHIP_WHEEL.chat."Start Ship Defence" with ship_defense.in_dungeon(pc.get_map_index()) begin
+			say("Do you want to set sail and start your journey?")
+			if select("Yes", "No") == 1 then
+
+				-- Check if the Ship Defence has already started.
+				if ship_defense_mgr.is_running() then
+					say("The Ship Defence has already started.")
+					return
+				end
+
+				local pids = { party.get_member_pids() }
+				local noQuestMembers = {}
+				local notEnoughLevelMembers = {}
+				local noTicketMembers = {}
+				local questCheck = true
+				local ticketCheck = true
+				local levelCheck = true
+				local ticketGroup = { get_special_item_group(TICKET_GROUP) }
+
+				if ship_defense_mgr.need_party() then
+					-- Check if the player has a party.
+					if not party.is_party() then
+						syschat("You can only start the journey with a group.")
+						return
+					end
+
+					-- Check if the player is a party leader.
+					if not party.is_leader() then
+						say("Only the group leader can register.")
+						return
+					end
+
+					for i, pid in next, pids, nil do
+						q.begin_other_pc_block(pid)
+
+						-- Check past mission of the player.
+						if not ship_defense.main_quest_complete() then
+							table.insert(noQuestMembers, pc.get_name())
+							questCheck = false
+						end
+
+						-- Check level of the player.
+						if pc.get_level() < LEVEL_CUT then
+							table.insert(notEnoughLevelMembers, pc.get_name())
+							levelCheck = false
+						end
+
+						-- Check tickets of the player.
+						if ship_defense_mgr.need_ticket() then
+							local hasTicket = false
+							for idx = 1, table.getn(ticketGroup), 2 do
+								if pc.count_item(ticketGroup[idx]) >= ticketGroup[idx + 1] then
+									hasTicket = true
+									break
+								end
+							end
+							if not hasTicket then
+								table.insert(noTicketMembers, pc.get_name())
+								ticketCheck = false
+							end
+						end
+
+						q.end_other_pc_block()
+					end
+
+					if not questCheck then
+						say("At least one player has not completed the quest[ENTER]yet.")
+						for i, name in next, noQuestMembers, nil do
+							say(color(1, 1, 0), " " .. name)
+						end
+
+						if not levelCheck then
+							wait()
+						else
+							return
+						end
+					end
+
+					if not levelCheck then
+						say("At least one player does not meet the level[ENTER]requirements.")
+						for i, name in next, notEnoughLevelMembers, nil do
+							say(color(1, 1, 0), " " .. name)
+						end
+
+						if not ticketCheck then
+							wait()
+						else
+							return
+						end
+					end
+
+					if ship_defense_mgr.need_ticket() then
+						if not ticketCheck then
+							say("At least one player does not have a Passage[ENTER]Ticket.")
+							for i, name in next, noTicketMembers, nil do
+								say(color(1, 1, 0), " " .. name)
+							end
+							return
+						end
+					end
+
+					if party.get_near_count() < table.getn(pids) then
+						say("At least one player is too far from the group.")
+						return
+					end
+
+					if ship_defense_mgr.need_ticket() then
+						for i, pid in next, pids, nil do
+							q.begin_other_pc_block(pid)
+
+							for i = 1, table.getn(ticketGroup), 2 do
+								if pc.count_item(ticketGroup[i]) >= ticketGroup[i + 1] then
+									pc.remove_item(ticketGroup[i], ticketGroup[i + 1])
+									break
+								end
+							end
+
+							q.end_other_pc_block()
+						end
+					end
+
+				else -- need_party == 0
+
+					-- Check tickets of the player.
+					if ship_defense_mgr.need_ticket() then
+						local hasTicket = false
+						for idx = 1, table.getn(ticketGroup), 2 do
+							if pc.count_item(ticketGroup[idx]) >= ticketGroup[idx + 1] then
+								hasTicket = true
+								break
+							end
+						end
+						if not hasTicket then
+							table.insert(noTicketMembers, pc.get_name())
+							ticketCheck = false
+						end
+
+						if not ticketCheck then
+							say("At least one player does not have a Passage[ENTER]Ticket.")
+							for i, name in next, noTicketMembers, nil do
+								say(color(1, 1, 0), " " .. name)
+							end
+							return
+						end
+
+						for i = 1, table.getn(ticketGroup), 2 do
+							if pc.count_item(ticketGroup[i]) >= ticketGroup[i + 1] then
+								pc.remove_item(ticketGroup[i], ticketGroup[i + 1])
+								break
+							end
+						end
+					end
+				end
+
+				say("What's going on?! The sea's getting rougher. Is[ENTER]there a storm brewing?")
+				ship_defense_mgr.start()
+			end
+		end
+
+		when SHIP_WHEEL.chat."Cancel Voyage" with ship_defense.in_dungeon(pc.get_map_index()) begin
+			if ship_defense_mgr.is_running() then
+				say("Do you want to turn around?")
+			else
+				say("Do you want to leave the ship now?")
+			end
+			if select("Yes", "No") == 1 then
+				ship_defense_mgr.leave()
+			end
+		end
+
+		when PORTAL.click with ship_defense.in_dungeon(pc.get_map_index()) begin
+			if ship_defense_mgr.is_running() then
+				ship_defense_mgr.land()
+			end
+		end
+
+		when WOOD_REPAIR.kill with ship_defense.in_dungeon(pc.get_map_index()) begin
+			if ship_defense_mgr.spawn_wood_repair() then
+				game.drop_item(REPAIR_WOOD_ITEM, 1)
+			end
+		end
+
+		when SHIP_MAST.take with ship_defense.in_dungeon(pc.get_map_index()) begin
+			if ship_defense_mgr.spawn_wood_repair() then
+				if item.get_vnum() == REPAIR_WOOD_ITEM then
+					ship_defense_mgr.set_alliance_hp_pct(1)
+					item.remove()
+				end
+			end
+		end
+	end
+end

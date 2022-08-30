@@ -1,0 +1,34 @@
+quest hydran_ring begin
+	state start begin
+		when 70303.use begin
+			local max_use = item.get_value(0)
+			local n = item.get_socket(0)
+
+			if n >= max_use then
+				say("Cancel process.")
+				return
+			end
+
+			local t = item.get_socket(1)
+			if t > get_global_time() and not is_test_server() then
+				say(string.format("You may use the ring again in %d minutes.", (t - get_global_time()) / 60))
+				return
+			end
+
+			say("Do you want to travel to the new continent?")
+			say(string.format("Usable %d times", max_use -n))
+			if select("Yes", "No") == 1 then
+				if not pc.warp(168500, 611200) then
+					return
+				end
+
+				item.set_socket(1, get_global_time() + item.get_value(1))
+				if n == max_use - 1 then
+					item.remove()
+				else
+					item.set_socket(0, n + 1)
+				end
+			end
+		end
+	end
+end

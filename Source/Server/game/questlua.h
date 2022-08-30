@@ -1,0 +1,1 @@
+/// 1.// Search	extern void RegisterDragonLairFunctionTable();// Add below#if defined(__SHIP_DEFENSE__)	extern void RegisterShipDefenseManagerFunctionTable();#endif

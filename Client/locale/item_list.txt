@@ -1,0 +1,3 @@
+31107	ETC	icon/item/31107.tga
+54705	ETC	icon/item/54705.tga
+70303	ETC	icon/item/70303.tga

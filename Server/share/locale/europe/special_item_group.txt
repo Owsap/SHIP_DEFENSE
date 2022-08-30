@@ -1,0 +1,35 @@
+###############################################################################
+# Reference: https://it-wiki.metin2.gameforge.com/index.php/Baule_di_Idra
+# Note: Before inserting this group into your original file, please check that
+# you have the items below.
+Group	HydraGachaChest
+{
+	Vnum	54705 -- Hydra's Chest
+	1	55410	1	100 -- Nessie Egg
+	2	25041	1	100 -- Magic Stone
+	3	72051	1	100 -- Scroll - M. Ice Witch
+	4	72052	1	100 -- Scroll - General Yonghan
+	5	50926	200	100 -- Glimmerstone
+	6	76019	1	100 -- Passage Ticket
+	7	76031	1	100 -- Protein Snack
+	8	72058	3	100 -- Spirit Stone Bundle
+	9	71001	2	100 -- Exorcism Scroll
+	10	70303	1	100 -- Hydran Ring
+	11	30251	5	100 -- Malevolence Jewel
+	12	30252	5	100 -- Wisdom Jewel
+	13	30167	5	100 -- Red Ghost Tree Branch
+	14	30168	5	100 -- Leaders' Notes
+	15	71142	1	100 -- Royal Tiger (white)
+	16	27992	1	100 -- White Pearl
+	17	27993	1	100 -- Blue Pearl
+	18	27994	1	100 -- Blood-Red Pearl
+	19	72301	1	100 -- Blessing Scroll
+	20	76028	1	100 -- Stone Handbook
+	21	55400	1	100 -- Mystery Box
+	22	72727	1	100 -- Moon Elixir (S)
+	23	76021	1	100 -- Sun Elixir (S)
+	24	85003	1	100 -- Lord Sash (noble)
+	25	39029	1	100 -- Reinforce Item
+	26	38060	1	100 -- Bag of Emotions
+	27	100700	1	100 -- Flame of the Dragon (B)
+}

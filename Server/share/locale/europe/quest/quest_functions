@@ -1,0 +1,11 @@
+ship_defense_mgr.create
+ship_defense_mgr.start
+ship_defense_mgr.join
+ship_defense_mgr.leave
+ship_defense_mgr.land
+ship_defense_mgr.is_created
+ship_defense_mgr.is_running
+ship_defense_mgr.need_party
+ship_defense_mgr.need_ticket
+ship_defense_mgr.spawn_wood_repair
+ship_defense_mgr.set_alliance_hp_pct

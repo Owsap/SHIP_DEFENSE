@@ -1,0 +1,3 @@
+31107	Repair Wood	Restores some of the mast's HP. Although you cannot move while making repairs, you are protected from monster attacks.
+54705	Hydra's Chest	The chest can be opened three times. What rewards wait for you inside?
+70303	Hydran Ring	A ring dropped by the Hydra when killed. It takes you to the new continent.

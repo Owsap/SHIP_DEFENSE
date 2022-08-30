@@ -1,0 +1,2 @@
+metin2_map_defensewave	128000	486400	3	3
+metin2_map_defensewave_port	128000	563200	3	3

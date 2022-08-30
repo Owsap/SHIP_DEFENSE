@@ -1,0 +1,31 @@
+3401	Tritonic Moray
+3402	Shark Soldier
+3404	Tritonic Hunter
+3405	Tritonic Slasher
+3601	Crab Warrior
+3602	Scorpion Marksman
+3603	Shrimp Soldier
+3604	Diabolical Hermit
+3605	Armoured Crab
+3949	Portal: New Continent
+3950	Kappa
+3951	Lagoon Kappa
+3952	Deep Sea Kappa
+3953	Kappa Leader
+3954	Moray Soldier
+3955	Deep Sea Moray Soldier
+3956	Siren Queen
+3957	Hydra's Spawn
+3958	Hydra's Spawn
+3959	Hydra's Spawn
+3960	Hydra
+3961	Hydra
+3962	Hydra
+3963	Hydra
+3964	Hydra
+3965	Hydra's Treasure
+3970	
+20432	Hydra Egg
+20434	Mast
+20436	Ship's Wheel
+20437	Repair Wood

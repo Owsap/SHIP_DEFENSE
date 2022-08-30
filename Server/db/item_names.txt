@@ -1,0 +1,3 @@
+31107	Repair Wood
+54705	Hydra's Chest
+70303	Hydran Ring
