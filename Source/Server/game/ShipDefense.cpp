@@ -856,10 +856,10 @@ void CShipDefense::Notice(const LPCHARACTER c_lpChar, const bool c_bBigFont, con
 	va_list pszArgs;
 	va_start(pszArgs, c_pszBuf);
 	{
-		//const char* c_pszLocaleText = LC_TEXT(c_pszBuf);
+		const char* c_pszLocaleText = LC_TEXT(c_pszBuf);
 
 		// OWSAP_MULTI_LOCALE_SUPPORT
-		const char* c_pszLocaleText = LC_STRING(c_pszBuf, c_lpChar->GetLanguage());
+		//const char* c_pszLocaleText = LC_STRING(c_pszBuf, c_lpChar->GetLanguage());
 		// OWSAP_END_OF_MULTI_LOCALE_SUPPORT
 
 		char szBuf[CHAT_MAX_LEN + 1] = {};
