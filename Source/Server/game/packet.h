@@ -5,4 +5,5 @@
 // Add below
 #if defined(__SHIP_DEFENSE__)
 	bool bAlliance;
+	int64_t iAllianceMinHP, iAllianceMaxHP;
 #endif

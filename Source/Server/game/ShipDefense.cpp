@@ -43,9 +43,9 @@ typedef struct SBroadcastAllianceHP
 				TPacketGCTarget Packet = { 0 };
 				Packet.header = HEADER_GC_TARGET;
 				Packet.dwVID = m_lpAllianceChar ? m_lpAllianceChar->GetVID() : 0;
-				Packet.iMinHP = m_lpAllianceChar ? m_lpAllianceChar->GetHP() : 0;
-				Packet.iMaxHP = m_lpAllianceChar ? m_lpAllianceChar->GetMaxHP() : 0;
 				Packet.bAlliance = true;
+				Packet.iAllianceMinHP = m_lpAllianceChar ? m_lpAllianceChar->GetHP() : 0;
+				Packet.iAllianceMaxHP = m_lpAllianceChar ? m_lpAllianceChar->GetMaxHP() : 0;
 				lpChar->GetDesc()->Packet(&Packet, sizeof(TPacketGCTarget));
 			}
 		}
@@ -265,8 +265,7 @@ typedef struct SNotice
 
 				m_pShipDefense->Notice(lpChar, true, "We're under attack from sea monsters! Get ready to fight!");
 				m_pShipDefense->Notice(lpChar, true, "Wave %d: For %d sec. you must protect the %s with all your strength.",
-					m_pShipDefense->GetWave() + 1, ShipDefense::FIRST_WAVE_DURATION,
-					LC_MOB_NAME(c_lpAllianceChar->GetRaceNum(), lpChar->GetLanguage())
+					m_pShipDefense->GetWave() + 1, ShipDefense::FIRST_WAVE_DURATION, c_lpAllianceChar->GetName()
 				);
 			}
 			break;
@@ -282,9 +281,7 @@ typedef struct SNotice
 
 				m_pShipDefense->Notice(lpChar, true, "They're attacking again! Ready your weapons!");
 				m_pShipDefense->Notice(lpChar, true, "Wave %d: While protecting the %s, defeat %s.",
-					m_pShipDefense->GetWave() + 1,
-					LC_MOB_NAME(c_lpAllianceChar->GetRaceNum(), lpChar->GetLanguage()),
-					LC_MOB_NAME(c_lpHydraChar->GetRaceNum(), lpChar->GetLanguage())
+					m_pShipDefense->GetWave() + 1, c_lpAllianceChar->GetName(), c_lpHydraChar->GetName()
 				);
 			}
 			break;
@@ -300,8 +297,7 @@ typedef struct SNotice
 					break;
 
 				m_pShipDefense->Notice(lpChar, false, "%s's remaining HP: %d%%",
-					LC_MOB_NAME(c_lpAllianceChar->GetRaceNum(), lpChar->GetLanguage()),
-					c_lpAllianceChar->GetHPPct()
+					c_lpAllianceChar->GetName(), c_lpAllianceChar->GetHPPct()
 				);
 			}
 			break;
@@ -857,10 +853,6 @@ void CShipDefense::Notice(const LPCHARACTER c_lpChar, const bool c_bBigFont, con
 	va_start(pszArgs, c_pszBuf);
 	{
 		const char* c_pszLocaleText = LC_TEXT(c_pszBuf);
-
-		// OWSAP_MULTI_LOCALE_SUPPORT
-		//const char* c_pszLocaleText = LC_STRING(c_pszBuf, c_lpChar->GetLanguage());
-		// OWSAP_END_OF_MULTI_LOCALE_SUPPORT
 
 		char szBuf[CHAT_MAX_LEN + 1] = {};
 		int iLen = vsnprintf(szBuf, sizeof(szBuf), c_pszLocaleText, pszArgs);

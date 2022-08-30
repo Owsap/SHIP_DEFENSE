@@ -43,6 +43,8 @@
 // Add below
 #if defined(__SHIP_DEFENSE__)
 	p.bAlliance = false;
+	p.iAllianceMinHP = 0;
+	p.iAllianceMaxHP = 0;
 #endif
 
 /// 6.
@@ -52,6 +54,8 @@
 // Add below
 #if defined(__SHIP_DEFENSE__)
 	p.bAlliance = false;
+	p.iAllianceMinHP = 0;
+	p.iAllianceMaxHP = 0;
 #endif
 
 /// 7.
@@ -61,4 +65,6 @@
 // Add below
 #if defined(__SHIP_DEFENSE__)
 	p.bAlliance = false;
+	p.iAllianceMinHP = 0;
+	p.iAllianceMaxHP = 0;
 #endif
