@@ -8,8 +8,6 @@
 * Discord: Owsap#7928
 * Skype: owsap.
 *
-* 0x0
-*
 * Web: https://owsap.dev/
 * GitHub: https://github.com/Owsap
 **/
@@ -33,29 +31,29 @@ namespace ShipDefense
 
 	enum EVNumHelper : DWORD
 	{
-		FISHER_MAN = 9009, // ยพรฎยบร
+		FISHER_MAN = 9009, // พ๎บฮ
 
-		SHIP_MAST = 20434, // ยฑรขยตร•ยตร€
-		SHIP_WHEEL = 20436, // รยถร…ยธยดรซ
+		SHIP_MAST = 20434, // ฑโตีตภ
+		SHIP_WHEEL = 20436, // มถลธด๋
 		SHIP_BARRIER = 3970, // Invisible Wall
 
-		HYDRA1 = 3960, // รรทยตรฅยถรณ1
-		HYDRA2 = 3961, // รรทยตรฅยถรณ2
-		HYDRA3 = 3962, // รรทยตรฅยถรณ3
+		HYDRA1 = 3960, // ศ๗ตๅถ๓1
+		HYDRA2 = 3961, // ศ๗ตๅถ๓2
+		HYDRA3 = 3962, // ศ๗ตๅถ๓3
 
-		HYDRA_LEFT = 3963, // รรทยตรฅยถรณ(left)
-		HYDRA_RIGHT = 3964, // รรทยตรฅยถรณ(right)
+		HYDRA_LEFT = 3963, // ศ๗ตๅถ๓(left)
+		HYDRA_RIGHT = 3964, // ศ๗ตๅถ๓(right)
 
-		MINI_HYDRA1 = 3957, // ยนรยดรรรทยตรฅยถรณ1
-		MINI_HYDRA2 = 3958, // ยนรยดรรรทยตรฅยถรณ2
-		MINI_HYDRA3 = 3959, // ยนรยดรรรทยตรฅยถรณ3
+		MINI_HYDRA1 = 3957, // นฬดฯศ๗ตๅถ๓1
+		MINI_HYDRA2 = 3958, // นฬดฯศ๗ตๅถ๓2
+		MINI_HYDRA3 = 3959, // นฬดฯศ๗ตๅถ๓3
 
-		HYDRA_EGG = 20432, // รรทยตรฅยถรณยพร
-		HYDRA_REWARD = 3965, // รรทยตรฅยถรณยบยธยปรณ
+		HYDRA_EGG = 20432, // ศ๗ตๅถ๓พห
+		HYDRA_REWARD = 3965, // ศ๗ตๅถ๓บธป๓
 
-		PORTAL = 3949, // รรทร…ยป
+		PORTAL = 3949, // ฦ๗ลป
 
-		WOOD_REPAIR = 20437, // ยผรถยธยฎรรร…ยถ
+		WOOD_REPAIR = 20437, // ผ๖ธฎฦะลถ
 	};
 
 	enum EMapIndex : WORD
@@ -129,6 +127,13 @@ namespace ShipDefense
 		NOTICE_MAST_PROTECTED,
 		NOTICE_MAST_DESTROYED,
 	};
+
+	enum EJumpTo : BYTE
+	{
+		JUMP_HOME,
+		JUMP_PORT,
+		JUMP_MAX
+	};
 };
 
 class CShipDefense
@@ -169,8 +174,7 @@ public:
 
 	// Jumping
 	void JumpToQuarterDeck();
-	void JumpBackHome();
-	void JumpAllOut();
+	void JumpAll(ShipDefense::EJumpTo eJumpTo);
 
 public:
 	std::time_t GetStartTime() const { return m_lStartTime; }
@@ -199,8 +203,8 @@ public:
 	LaserEffectDataMap GetLaserEffectDataMap() { return m_mapLaserEffectData; }
 	void SetLaserEffectData(const BYTE c_byPos, const long c_lXPos, const long c_lYPos);
 
-	void SetLastLaserShelterPulse(int iPulse) { m_iLastLaserShelterPulse = iPulse; }
-	int GetLastLaserShelterPulse() const { return m_iLastLaserShelterPulse; }
+	void SetLastLaserShelterPulse(UINT iPulse) { m_iLastLaserShelterPulse = iPulse; }
+	UINT GetLastLaserShelterPulse() const { return m_iLastLaserShelterPulse; }
 
 private:
 	std::time_t m_lStartTime;
@@ -222,7 +226,7 @@ private:
 protected:
 	UniqueCharacterMap m_mapUniqueCharacter;
 	LaserEffectDataMap m_mapLaserEffectData;
-	int m_iLastLaserShelterPulse;
+	UINT m_iLastLaserShelterPulse;
 };
 
 class CShipDefenseManager : public singleton<CShipDefenseManager>

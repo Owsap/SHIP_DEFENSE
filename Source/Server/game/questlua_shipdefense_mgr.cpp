@@ -8,8 +8,6 @@
 * Discord: Owsap#7928
 * Skype: owsap.
 *
-* 0x0
-*
 * Web: https://owsap.dev/
 * GitHub: https://github.com/Owsap
 **/
@@ -37,7 +35,7 @@ namespace quest
 			return 0;
 		}
 
-		return 1;
+		return 0;
 	}
 
 	int ship_defense_mgr_start(lua_State* L)
@@ -59,7 +57,7 @@ namespace quest
 			return 0;
 		}
 
-		return 1;
+		return 0;
 	}
 
 	int ship_defense_mgr_join(lua_State* L)
@@ -70,7 +68,7 @@ namespace quest
 
 		CShipDefenseManager& rkShipDefenseMgr = CShipDefenseManager::Instance();
 		rkShipDefenseMgr.Join(c_lpChar);
-		return 1;
+		return 0;
 	}
 
 	int ship_defense_mgr_leave(lua_State* L)
@@ -81,7 +79,7 @@ namespace quest
 
 		CShipDefenseManager& rkShipDefenseMgr = CShipDefenseManager::Instance();
 		rkShipDefenseMgr.Leave(c_lpChar);
-		return 1;
+		return 0;
 	}
 
 	int ship_defense_mgr_land(lua_State* L)
@@ -92,7 +90,7 @@ namespace quest
 
 		CShipDefenseManager& rkShipDefenseMgr = CShipDefenseManager::Instance();
 		rkShipDefenseMgr.Land(c_lpChar);
-		return 1;
+		return 0;
 	}
 
 	int ship_defense_mgr_is_created(lua_State* L)
@@ -151,7 +149,7 @@ namespace quest
 
 		CShipDefenseManager& rkShipDefenseMgr = CShipDefenseManager::Instance();
 		rkShipDefenseMgr.SetAllianceHPPct(c_lpChar, c_byPct);
-		return 1;
+		return 0;
 	}
 
 	void RegisterShipDefenseManagerFunctionTable()

@@ -8,8 +8,6 @@
 * Discord: Owsap#7928
 * Skype: owsap.
 *
-* 0x0
-*
 * Web: https://owsap.dev/
 * GitHub: https://github.com/Owsap
 **/
@@ -30,7 +28,7 @@
 
 using namespace ShipDefense;
 
-typedef struct SBroadcastAllianceHP
+struct SBroadcastAllianceHP
 {
 	SBroadcastAllianceHP(const LPCHARACTER c_lpAllianceChar) : m_lpAllianceChar(c_lpAllianceChar) {}
 	void operator() (LPENTITY lpEntity)
@@ -51,24 +49,24 @@ typedef struct SBroadcastAllianceHP
 		}
 	}
 	LPCHARACTER m_lpAllianceChar;
-} TBroadcastAllianceHP;
+};
 
-typedef struct SExitNotice
+struct SExitNotice
 {
-	SExitNotice(const WORD c_wSec) : m_wSec(c_wSec) {}
+	SExitNotice(const UINT c_iSec) : m_iSec(c_iSec) {}
 	void operator() (LPENTITY lpEntity)
 	{
 		if (lpEntity->IsType(ENTITY_CHARACTER))
 		{
 			LPCHARACTER lpChar = static_cast<LPCHARACTER>(lpEntity);
 			if (lpChar->IsPC() == true)
-				lpChar->ChatPacket(CHAT_TYPE_INFO, LC_TEXT("Hurry! You have %d minutes to travel through the portal to reach the mainland."), (m_wSec % 3600) / 60);
+				lpChar->ChatPacket(CHAT_TYPE_INFO, LC_TEXT("Hurry! You have %d minutes to travel through the portal to reach the mainland."), (m_iSec % 3600) / 60);
 		}
 	}
-	WORD m_wSec;
-} TExitNotice;
+	UINT m_iSec;
+};
 
-typedef struct SFindAllianceCharacter
+struct SFindAllianceCharacter
 {
 	SFindAllianceCharacter(const LPCHARACTER c_lpAllianceChar) : m_lpAllianceChar(c_lpAllianceChar) {}
 	void operator() (LPENTITY lpEntity)
@@ -84,9 +82,9 @@ typedef struct SFindAllianceCharacter
 		}
 	}
 	LPCHARACTER m_lpAllianceChar;
-} TFindAllianceCharacter;
+};
 
-typedef struct SClearMonsters
+struct SClearMonsters
 {
 	SClearMonsters(const EClearType c_eType) : m_eType(c_eType) {}
 	void operator() (LPENTITY lpEntity)
@@ -122,9 +120,9 @@ typedef struct SClearMonsters
 		}
 	}
 	EClearType m_eType;
-} TClearMonsters;
+};
 
-typedef struct SCheckLaserPosition
+struct SCheckLaserPosition
 {
 	SCheckLaserPosition(CShipDefense* pShipDefense) : m_pShipDefense(pShipDefense) {}
 	void operator() (LPENTITY lpEntity)
@@ -180,7 +178,7 @@ typedef struct SCheckLaserPosition
 		}
 	}
 	CShipDefense* m_pShipDefense;
-} TCheckLaserPosition;
+};
 
 typedef struct SJumpAll
 {
@@ -208,7 +206,7 @@ typedef struct SJumpAll
 	long m_lMapIndex, m_lXPos, m_lYPos;
 } TJumpAll;
 
-typedef struct SWaveNotice
+struct SWaveNotice
 {
 	SWaveNotice(const bool c_bNextWave, const BYTE c_byWave, const BYTE c_bySec)
 		: m_bNextWave(c_bNextWave), m_byWave(c_byWave), m_bySec(c_bySec) {}
@@ -238,7 +236,7 @@ typedef struct SWaveNotice
 	}
 	bool m_bNextWave;
 	BYTE m_byWave, m_bySec;
-} TWaveNotice;
+};
 
 typedef struct SNotice
 {
@@ -314,8 +312,7 @@ typedef struct SNotice
 	}
 	CShipDefense* m_pShipDefense;
 	ENoticeType m_eType;
-} TNotice;
-
+};
 
 EVENTINFO(ClearSpawnEventInfo)
 {
@@ -342,12 +339,11 @@ EVENTFUNC(ClearSpawnEvent)
 	if (c_lpSectreeMap == nullptr)
 		return 0;
 
-	TClearMonsters ClearMonsters(pClearSpawnEventInfo->eClearType);
+	SClearMonsters ClearMonsters(pClearSpawnEventInfo->eClearType);
 	c_lpSectreeMap->for_each(ClearMonsters);
 
 	return 1;
 };
-
 
 EVENTINFO(ExitEventInfo)
 {
@@ -378,15 +374,15 @@ EVENTFUNC(ExitEvent)
 	if (pExitEventInfo->uiCountSec < 1)
 	{
 		if (pExitEventInfo->bBackHome == true)
-			pShipDefense->JumpBackHome();
+			pShipDefense->JumpAll(ShipDefense::JUMP_HOME);
 		else
-			pShipDefense->JumpAllOut();
+			pShipDefense->JumpAll(ShipDefense::JUMP_PORT);
 		return 0;
 	}
 
 	if (pExitEventInfo->uiCountSec % 60 == 0)
 	{
-		TExitNotice ExitNotice(pExitEventInfo->uiCountSec);
+		SExitNotice ExitNotice(pExitEventInfo->uiCountSec);
 		c_lpSectreeMap->for_each(ExitNotice);
 	}
 
@@ -452,10 +448,10 @@ EVENTFUNC(LaserEffectEvent)
 		return 0;
 
 	// Check if the player is on top of the laser effect.
-	TCheckLaserPosition CheckLaserPosition(pShipDefense);
+	SCheckLaserPosition CheckLaserPosition(pShipDefense);
 	c_lpSectreeMap->for_each(CheckLaserPosition);
 
-	BYTE byRandomUniqueCharPosition = number(ShipDefense::UNIQUE_MINI_HYDRA1_POS, ShipDefense::UNIQUE_MINI_HYDRA4_POS);
+	BYTE byRandomUniqueCharPosition = static_cast<BYTE>(number(ShipDefense::UNIQUE_MINI_HYDRA1_POS, ShipDefense::UNIQUE_MINI_HYDRA4_POS));
 
 	const LPCHARACTER c_lpUniqueChar = pShipDefense->GetUniqueCharacter(byRandomUniqueCharPosition);
 	if (c_lpUniqueChar == nullptr)
@@ -547,7 +543,7 @@ EVENTFUNC(WaveEvent)
 	case ShipDefense::WAVE3:
 	case ShipDefense::WAVE4:
 	{
-		TWaveNotice WaveNotice(pWaveEventInfo->bNextWave, pWaveEventInfo->byWave, pWaveEventInfo->byWaitCount);
+		SWaveNotice WaveNotice(pWaveEventInfo->bNextWave, pWaveEventInfo->byWave, pWaveEventInfo->byWaitCount);
 		if (pWaveEventInfo->bNextWave == true)
 		{
 			if (pWaveEventInfo->byWaitCount <= 10 || (pWaveEventInfo->byWaitCount == 30))
@@ -715,7 +711,7 @@ EVENTFUNC(SpawnEvent)
 	}
 
 	// Set monster victim to alliance character.
-	TFindAllianceCharacter FindAllianceCharacter(pShipDefense->GetAllianceCharacter());
+	SFindAllianceCharacter FindAllianceCharacter(pShipDefense->GetAllianceCharacter());
 	c_lpSectreeMap->for_each(FindAllianceCharacter);
 
 	// Prevent second counter from overflowing.
@@ -754,7 +750,6 @@ CShipDefense::~CShipDefense()
 
 void CShipDefense::Destroy()
 {
-	CShipDefenseManager::Instance().Remove(m_dwLeaderPID);
 	SECTREE_MANAGER::instance().DestroyPrivateMap(m_lMapIndex);
 
 	m_lStartTime = 0;
@@ -818,7 +813,7 @@ void CShipDefense::DeadCharacter(const LPCHARACTER c_lpChar)
 		CancelEvents();
 		ClearDeck(ShipDefense::EClearType::CLEAR_ALL);
 
-		TNotice Notice(this, NOTICE_MAST_DESTROYED);
+		SNotice Notice(this, NOTICE_MAST_DESTROYED);
 		c_lpSectreeMap->for_each(Notice);
 
 		ExitEventInfo* pExitEventInfo = AllocEventInfo<ExitEventInfo>();
@@ -841,7 +836,7 @@ void CShipDefense::DeadCharacter(const LPCHARACTER c_lpChar)
 	}
 }
 
-void CShipDefense::Notice(const LPCHARACTER c_lpChar, const bool c_bBigFont, const char* c_pszBuf ...)
+void CShipDefense::Notice(const LPCHARACTER c_lpChar, const bool c_bBigFont, const char* c_pszBuf, ...)
 {
 	if (c_lpChar == nullptr)
 		return;
@@ -896,7 +891,7 @@ LPCHARACTER CShipDefense::Spawn(DWORD dwVNum, int iX, int iY, int iDir, bool bSp
 		iRot = number(0, 360);
 
 	lpChar->SetProto(c_pMob);
-	lpChar->SetRotation(iRot);
+	lpChar->SetRotation(static_cast<float>(iRot));
 
 	if (!lpChar->Show(m_lMapIndex, lX, lY, 0, bSpawnMotion))
 	{
@@ -1057,7 +1052,7 @@ void CShipDefense::Start()
 	}
 
 	// Broadcast alliance health point to everyone.
-	TBroadcastAllianceHP BroadcastAllianceHP(GetAllianceCharacter());
+	SBroadcastAllianceHP BroadcastAllianceHP(GetAllianceCharacter());
 	c_lpSectreeMap->for_each(BroadcastAllianceHP);
 
 	// Prepare the first wave.
@@ -1073,7 +1068,7 @@ void CShipDefense::ClearDeck(ShipDefense::EClearType eClearType)
 		return;
 	}
 
-	TClearMonsters ClearMonsters(eClearType);
+	SClearMonsters ClearMonsters(eClearType);
 	c_lpSectreeMap->for_each(ClearMonsters);
 }
 
@@ -1133,7 +1128,7 @@ void CShipDefense::PrepareWave(const BYTE c_byWave)
 		Spawn(ShipDefense::EVNumHelper::HYDRA_RIGHT, 385, 439, 5);
 		Spawn(ShipDefense::EVNumHelper::HYDRA_RIGHT, 392, 443, 5);
 
-		TNotice Notice(this, NOTICE_WAVE1);
+		SNotice Notice(this, NOTICE_WAVE1);
 		c_lpSectreeMap->for_each(Notice);
 
 		pWaveEventInfo->byWaitCount = ShipDefense::FIRST_WAVE_DELAY;
@@ -1149,7 +1144,7 @@ void CShipDefense::PrepareWave(const BYTE c_byWave)
 		Spawn(ShipDefense::EVNumHelper::HYDRA_RIGHT, 392, 443, 5);
 		SpawnHydra(ShipDefense::EVNumHelper::HYDRA1);
 
-		TNotice Notice(this, NOTICE_WAVE2);
+		SNotice Notice(this, NOTICE_WAVE2);
 		c_lpSectreeMap->for_each(Notice);
 
 		pWaveEventInfo->byWaitCount = ShipDefense::NEXT_WAVE_DELAY;
@@ -1164,7 +1159,7 @@ void CShipDefense::PrepareWave(const BYTE c_byWave)
 		Spawn(ShipDefense::EVNumHelper::HYDRA_RIGHT, 385, 439, 5);
 		SpawnHydra(ShipDefense::EVNumHelper::HYDRA2);
 
-		TNotice Notice(this, NOTICE_WAVE3);
+		SNotice Notice(this, NOTICE_WAVE3);
 		c_lpSectreeMap->for_each(Notice);
 
 		pWaveEventInfo->byWaitCount = ShipDefense::NEXT_WAVE_DELAY;
@@ -1178,7 +1173,7 @@ void CShipDefense::PrepareWave(const BYTE c_byWave)
 
 		SpawnHydra(ShipDefense::EVNumHelper::HYDRA3);
 
-		TNotice Notice(this, NOTICE_WAVE4);
+		SNotice Notice(this, NOTICE_WAVE4);
 		c_lpSectreeMap->for_each(Notice);
 
 		pWaveEventInfo->byWaitCount = ShipDefense::NEXT_WAVE_DELAY;
@@ -1264,7 +1259,7 @@ void CShipDefense::SetWave(const BYTE c_byWave)
 	}
 
 	// Set monster victim to alliance character.
-	TFindAllianceCharacter FindAllianceCharacter(GetAllianceCharacter());
+	SFindAllianceCharacter FindAllianceCharacter(GetAllianceCharacter());
 	c_lpSectreeMap->for_each(FindAllianceCharacter);
 }
 
@@ -1278,7 +1273,7 @@ void CShipDefense::SetShipEvent(const BYTE c_byWave)
 	case ShipDefense::WAVE3:
 	case ShipDefense::WAVE4:
 	{
-		TNotice Notice(this, NOTICE_MAST_PROTECTED);
+		SNotice Notice(this, NOTICE_MAST_PROTECTED);
 		GetSectreeMap()->for_each(Notice);
 
 		ShipEventInfo* pShipEventInfo = AllocEventInfo<ShipEventInfo>();
@@ -1293,7 +1288,7 @@ void CShipDefense::SetShipEvent(const BYTE c_byWave)
 	{
 		RemoveBarriers();
 
-		TNotice Notice(this, NOTICE_WAVES);
+		SNotice Notice(this, NOTICE_WAVES);
 		GetSectreeMap()->for_each(Notice);
 
 		Spawn(ShipDefense::EVNumHelper::HYDRA_REWARD, 385, 416, 1);
@@ -1327,41 +1322,47 @@ void CShipDefense::JumpToQuarterDeck()
 	SpawnBarriers();
 }
 
-void CShipDefense::JumpBackHome()
+
+void CShipDefense::JumpAll(ShipDefense::EJumpTo eJumpTo)
 {
 	const LPSECTREE_MAP c_lpSectreeMap = GetSectreeMap();
 	if (c_lpSectreeMap == nullptr)
 		return;
 
-	PIXEL_POSITION SPos = { 0, 0, 0 };
-	SECTREE_MANAGER::Instance().GetRecallPositionByEmpire(ShipDefense::EMapIndex::ENTRY_MAP_INDEX, 0, SPos);
-
-	TJumpAll JumpAll(ShipDefense::EMapIndex::ENTRY_MAP_INDEX, SPos.x, SPos.y);
-	c_lpSectreeMap->for_each(JumpAll);
-}
-
-void CShipDefense::JumpAllOut()
-{
-	const LPSECTREE_MAP c_lpSectreeMap = GetSectreeMap();
-	if (c_lpSectreeMap == nullptr)
-		return;
-
-	const LPSECTREE_MAP c_lpSectreeTargetMap = SECTREE_MANAGER::instance().GetMap(ShipDefense::EMapIndex::PORT_MAP_INDEX);
-	if (c_lpSectreeTargetMap != nullptr)
+	switch (eJumpTo)
 	{
-		TJumpAll JumpAll(ShipDefense::EMapIndex::PORT_MAP_INDEX,
-			c_lpSectreeTargetMap->m_setting.iBaseX + 405 * 100,
-			c_lpSectreeTargetMap->m_setting.iBaseY + 480 * 100
-		);
+	case ShipDefense::JUMP_HOME:
+	{
+		PIXEL_POSITION SPos = { 0, 0, 0 };
+		SECTREE_MANAGER::Instance().GetRecallPositionByEmpire(ShipDefense::EMapIndex::ENTRY_MAP_INDEX, 0, SPos);
+
+		TJumpAll JumpAll(ShipDefense::EMapIndex::ENTRY_MAP_INDEX, SPos.x, SPos.y);
 		c_lpSectreeMap->for_each(JumpAll);
-
 	}
-	else
+	break;
+
+	case ShipDefense::JUMP_PORT:
 	{
-		JumpBackHome();
+		const LPSECTREE_MAP c_lpSectreeTargetMap = SECTREE_MANAGER::instance().GetMap(ShipDefense::EMapIndex::PORT_MAP_INDEX);
+		if (c_lpSectreeTargetMap != nullptr)
+		{
+			TJumpAll JumpAll(ShipDefense::EMapIndex::PORT_MAP_INDEX,
+				c_lpSectreeTargetMap->m_setting.iBaseX + 405 * 100,
+				c_lpSectreeTargetMap->m_setting.iBaseY + 480 * 100
+			);
+			c_lpSectreeMap->for_each(JumpAll);
+		}
+		else
+		{
+			JumpAll(ShipDefense::JUMP_HOME);
+			return;
+		}
+	}
+	break;
+
 	}
 
-	Destroy();
+	CShipDefenseManager::Instance().Remove(m_dwLeaderPID);
 }
 
 LPCHARACTER CShipDefense::GetAllianceCharacter()
@@ -1436,22 +1437,17 @@ void CShipDefenseManager::Remove(const DWORD c_dwLeaderPID)
 {
 	ShipDefenseMap::iterator it = m_mapShipDefense.find(c_dwLeaderPID);
 	if (it != m_mapShipDefense.end())
+	{
+		delete it->second;
 		m_mapShipDefense.erase(it);
+	}
 }
 
 void CShipDefenseManager::Destroy()
 {
 	ShipDefenseMap::iterator it = m_mapShipDefense.begin();
 	for (; it != m_mapShipDefense.end(); ++it)
-	{
-		CShipDefense* pShipDefense = it->second;
-		if (pShipDefense)
-		{
-			pShipDefense->Destroy();
-			if (pShipDefense)
-				delete pShipDefense;
-		}
-	}
+		delete it->second;
 	m_mapShipDefense.clear();
 }
 
@@ -1536,7 +1532,7 @@ void CShipDefenseManager::Stop(const LPCHARACTER c_lpChar)
 	{
 		CShipDefense* pShipDefense = it->second;
 		if (pShipDefense != nullptr)
-			pShipDefense->JumpBackHome();
+			pShipDefense->JumpAll(ShipDefense::JUMP_HOME);
 	}
 }
 
@@ -1618,7 +1614,7 @@ void CShipDefenseManager::BroadcastAllianceHP(const LPCHARACTER c_lpAllianceChar
 	if (c_lpAllianceChar == nullptr || c_lpSectree == nullptr)
 		return;
 
-	TBroadcastAllianceHP BroadcastAllianceHP(c_lpAllianceChar);
+	SBroadcastAllianceHP BroadcastAllianceHP(c_lpAllianceChar);
 	c_lpSectree->ForEachAround(BroadcastAllianceHP);
 }
 
@@ -1649,14 +1645,14 @@ void CShipDefenseManager::SetAllianceHPPct(const LPCHARACTER c_lpRepairChar, con
 		lpUniqueChar->SetHP(lpUniqueChar->GetHP() + iHP);
 
 		// Notice players of alliance health points.
-		TNotice Notice(pShipDefense, NOTICE_MAST_HP);
+		SNotice Notice(pShipDefense, NOTICE_MAST_HP);
 		c_lpSectreeMap->for_each(Notice);
 
 		// Add stun affect.
 		c_lpRepairChar->AddAffect(AFFECT_STUN, POINT_NONE, 0, AFF_STUN, ShipDefense::WOOD_REPAIR_STUN_DELAY, 0, true);
 
 		// Broadcast alliance health points to players.
-		TBroadcastAllianceHP BroadcastAllianceHP(lpUniqueChar);
+		SBroadcastAllianceHP BroadcastAllianceHP(lpUniqueChar);
 		c_lpSectreeMap->for_each(BroadcastAllianceHP);
 	}
 }
@@ -1750,6 +1746,9 @@ bool CShipDefenseManager::CanAttack(LPCHARACTER lpCharAttacker, LPCHARACTER lpCh
 bool CShipDefenseManager::OnKill(LPCHARACTER lpDeadChar, LPCHARACTER lpKillerChar)
 {
 	if (lpDeadChar == nullptr)
+		return false;
+
+	if (IsDungeon(lpDeadChar->GetMapIndex()) == false)
 		return false;
 
 	if (m_mapShipDefense.empty())
