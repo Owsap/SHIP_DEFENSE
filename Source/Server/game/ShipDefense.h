@@ -149,6 +149,12 @@ public:
 	void DeadCharacter(const LPCHARACTER c_lpChar);
 	void Notice(const LPCHARACTER c_lpChar, const bool c_bBigFont, const char* c_pszBuf, ...);
 
+	void FindAllyCharacter();
+	void ClearMonstersByType(ShipDefense::EClearType eClearType = ShipDefense::CLEAR_ALL);
+	void CheckLaserPosition();
+	void JumpToPosition(const long c_lMapIndex, const long c_lXPos, const long c_lYPos);
+	void NoticeByType(const ShipDefense::ENoticeType c_eType);
+
 	// Spawns
 	LPCHARACTER Spawn(DWORD dwVNum, int iX, int iY, int iDir, bool bSpawnMotion = false);
 	bool SpawnRegen(const char* c_szFileName, bool bOnce = true);
@@ -263,7 +269,7 @@ public:
 	DWORD GetLeaderPID(const LPCHARACTER c_lpChar, const bool c_bIsLeader);
 
 	// Alliance
-	void BroadcastAllianceHP(const LPCHARACTER c_lpAllianceChar, const LPSECTREE c_lpSectree);
+	void BroadcastAllianceHP(const LPCHARACTER c_lpAllianceChar, const LPSECTREE_MAP c_lpSectreeMap);
 	void SetAllianceHPPct(const LPCHARACTER c_lpRepairChar, const BYTE c_byPct);
 
 	// Single Player Actions
