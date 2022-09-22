@@ -101,7 +101,7 @@ EVENTFUNC(ExitEvent)
 		{
 			if (lpEntity->IsType(ENTITY_CHARACTER) == false)
 				return;
-			
+
 			const LPCHARACTER c_lpChar = dynamic_cast<LPCHARACTER>(lpEntity);
 			if (c_lpChar && c_lpChar->IsPC())
 				c_lpChar->ChatPacket(CHAT_TYPE_INFO, LC_TEXT("Hurry! You have %d minutes to travel through the portal to reach the mainland."), (uiCountSec % 3600) / 60);
@@ -170,7 +170,7 @@ EVENTFUNC(LaserEffectEvent)
 	if (c_lpSectreeMap == nullptr)
 		return 0;
 
-	// Check if the player is on top of the laser effect.
+	// NOTE : Check if the player is on top of the laser effect.
 	pShipDefense->CheckLaserPosition();
 
 	BYTE byRandomUniqueCharPosition = static_cast<BYTE>(number(ShipDefense::UNIQUE_MINI_HYDRA1_POS, ShipDefense::UNIQUE_MINI_HYDRA4_POS));
@@ -193,7 +193,7 @@ EVENTFUNC(LaserEffectEvent)
 	EffectPositionMap::iterator it = mapEffectPosition.find(byRandomUniqueCharPosition);
 	if (it != mapEffectPosition.end())
 	{
-		// Generate random probability for laser effect.
+		// NOTE : Generate random probability for laser effect.
 		static std::random_device RandomDevice;
 		static std::mt19937 Generate(RandomDevice());
 		static std::uniform_real_distribution<> Distribute(ShipDefense::MIN_PROB, ShipDefense::MAX_PROB);
@@ -202,7 +202,7 @@ EVENTFUNC(LaserEffectEvent)
 		switch (pShipDefense->GetWave())
 		{
 		case ShipDefense::WAVE2:
-			uiSpawnProbability = 50; // 5% 
+			uiSpawnProbability = 50; // 5%
 			break;
 		case ShipDefense::WAVE3:
 			uiSpawnProbability = 75; // 7.5%
@@ -339,7 +339,7 @@ EVENTFUNC(SpawnEvent)
 	if (c_lpSectreeMap == nullptr)
 		return 0;
 
-	// Generate random probability for spawning something.
+	// NOTE : Generate random probability for spawning something.
 	static std::random_device RandomDevice;
 	static std::mt19937 Generate(RandomDevice());
 	static std::uniform_real_distribution<> Distribute(ShipDefense::MIN_PROB, ShipDefense::MAX_PROB);
@@ -360,12 +360,12 @@ EVENTFUNC(SpawnEvent)
 	{
 	case ShipDefense::WAVE1:
 	{
-		// Spawn monster each 40 seconds and set the next step.
+		// NOTE : Spawn monster each 40 seconds and set the next step.
 		if (pSpawnEventInfo->uiCountSec >= 40)
 		{
 			if (pSpawnEventInfo->uiCountSec % number(1, 3) == 0)
 			{
-				// Spawn monster each 5 seconds and continue step.
+				// NOTE : Spawn monster each 5 seconds and continue step.
 				pShipDefense->Spawn(number(3954, 3955), vecSpawnPosition[uiRandomPosition].first, vecSpawnPosition[uiRandomPosition].second, 0);
 			}
 		}
@@ -380,23 +380,32 @@ EVENTFUNC(SpawnEvent)
 		if (static_cast<UINT>(Distribute(Generate)) <= 30) // 3%
 			pShipDefense->SpawnMiniHydra(ShipDefense::EVNumHelper::MINI_HYDRA1, 1);
 
-		if (pSpawnEventInfo->uiCountSec % 10 == 0 && pSpawnEventInfo->byStep == 0)
+		// NOTE : Check deck each 3 seconds and spawn regen if the deck is empty.
+		if (pSpawnEventInfo->uiCountSec % 3 && pShipDefense->CheckEmptyDeck())
 		{
-			// Spawn regen each 10 seconds and set the next step.
-			pShipDefense->SpawnRegen("data/dungeon/ship_defense/wave2_1.txt");
-			pSpawnEventInfo->byStep = 1;
-		}
-		else if (pSpawnEventInfo->uiCountSec % 30 == 0 && pSpawnEventInfo->byStep == 1)
-		{
-			// Spawn regen each 30 seconds and set the next step.
-			pShipDefense->SpawnRegen("data/dungeon/ship_defense/wave2_1.txt");
-			pSpawnEventInfo->byStep = 2;
-		}
-		else if (pSpawnEventInfo->uiCountSec % 60 == 0 && pSpawnEventInfo->byStep == 2)
-		{
-			// Spawn regen each 60 seconds and reset the steps.
 			pShipDefense->SpawnRegen("data/dungeon/ship_defense/wave2.txt");
 			pSpawnEventInfo->byStep = 0; // Repeat
+		}
+		else
+		{
+			if (pSpawnEventInfo->uiCountSec % 10 == 0 && pSpawnEventInfo->byStep == 0)
+			{
+				// NOTE : Spawn regen each 10 seconds and set the next step.
+				pShipDefense->SpawnRegen("data/dungeon/ship_defense/wave2_1.txt");
+				pSpawnEventInfo->byStep = 1;
+			}
+			else if (pSpawnEventInfo->uiCountSec % 30 == 0 && pSpawnEventInfo->byStep == 1)
+			{
+				// NOTE : Spawn regen each 30 seconds and set the next step.
+				pShipDefense->SpawnRegen("data/dungeon/ship_defense/wave2_1.txt");
+				pSpawnEventInfo->byStep = 2;
+			}
+			else if (pSpawnEventInfo->uiCountSec % 60 == 0 && pSpawnEventInfo->byStep == 2)
+			{
+				// NOTE : Spawn regen each 60 seconds and reset the steps.
+				pShipDefense->SpawnRegen("data/dungeon/ship_defense/wave2.txt");
+				pSpawnEventInfo->byStep = 0; // Repeat
+			}
 		}
 	}
 	break;
@@ -409,23 +418,32 @@ EVENTFUNC(SpawnEvent)
 		if (static_cast<UINT>(Distribute(Generate)) <= 40) // 4%
 			pShipDefense->SpawnMiniHydra(ShipDefense::EVNumHelper::MINI_HYDRA2, 2);
 
-		if (pSpawnEventInfo->uiCountSec % 10 == 0 && pSpawnEventInfo->byStep == 0)
+		// NOTE : Check deck each 3 seconds and spawn regen if the deck is empty.
+		if (pSpawnEventInfo->uiCountSec % 3 && pShipDefense->CheckEmptyDeck())
 		{
-			// Spawn regen each 10 seconds and set the next step.
-			pShipDefense->SpawnRegen("data/dungeon/ship_defense/wave3_1.txt");
-			pSpawnEventInfo->byStep = 1;
-		}
-		else if (pSpawnEventInfo->uiCountSec % 30 == 0 && pSpawnEventInfo->byStep == 1)
-		{
-			// Spawn regen each 30 seconds and set the next step.
-			pShipDefense->SpawnRegen("data/dungeon/ship_defense/wave3_1.txt");
-			pSpawnEventInfo->byStep = 2;
-		}
-		else if (pSpawnEventInfo->uiCountSec % 60 == 0 && pSpawnEventInfo->byStep == 2)
-		{
-			// Spawn regen each 60 seconds and reset the steps.
 			pShipDefense->SpawnRegen("data/dungeon/ship_defense/wave3.txt");
-			pSpawnEventInfo->byStep = 0;
+			pSpawnEventInfo->byStep = 0; // Repeat
+		}
+		else
+		{
+			if (pSpawnEventInfo->uiCountSec % 10 == 0 && pSpawnEventInfo->byStep == 0)
+			{
+				// NOTE : Spawn regen each 10 seconds and set the next step.
+				pShipDefense->SpawnRegen("data/dungeon/ship_defense/wave3_1.txt");
+				pSpawnEventInfo->byStep = 1;
+			}
+			else if (pSpawnEventInfo->uiCountSec % 30 == 0 && pSpawnEventInfo->byStep == 1)
+			{
+				// NOTE : Spawn regen each 30 seconds and set the next step.
+				pShipDefense->SpawnRegen("data/dungeon/ship_defense/wave3_1.txt");
+				pSpawnEventInfo->byStep = 2;
+			}
+			else if (pSpawnEventInfo->uiCountSec % 60 == 0 && pSpawnEventInfo->byStep == 2)
+			{
+				// NOTE : Spawn regen each 60 seconds and reset the steps.
+				pShipDefense->SpawnRegen("data/dungeon/ship_defense/wave3.txt");
+				pSpawnEventInfo->byStep = 0;
+			}
 		}
 	}
 	break;
@@ -438,36 +456,45 @@ EVENTFUNC(SpawnEvent)
 		if (static_cast<UINT>(Distribute(Generate)) <= 50) // 5%
 			pShipDefense->SpawnMiniHydra(ShipDefense::EVNumHelper::MINI_HYDRA2, 4);
 
-		if (pSpawnEventInfo->uiCountSec % 10 == 0 && pSpawnEventInfo->byStep == 0)
+		// NOTE : Check deck each 3 seconds and spawn regen if the deck is empty.
+		if (pSpawnEventInfo->uiCountSec % 3 && pShipDefense->CheckEmptyDeck())
 		{
-			// Spawn regen each 10 seconds and set the next step.
-			pShipDefense->SpawnRegen("data/dungeon/ship_defense/wave4_1.txt");
-			pSpawnEventInfo->byStep = 1;
+			pShipDefense->SpawnRegen("data/dungeon/ship_defense/wave3.txt");
+			pSpawnEventInfo->byStep = 0; // Repeat
 		}
-		else if (pSpawnEventInfo->uiCountSec % 30 == 0 && pSpawnEventInfo->byStep == 1)
+		else
 		{
-			// Spawn regen each 30 seconds and set the next step.
-			pShipDefense->SpawnRegen("data/dungeon/ship_defense/wave4_1.txt");
-			pSpawnEventInfo->byStep = 2;
-		}
-		else if (pSpawnEventInfo->uiCountSec % 60 == 0 && pSpawnEventInfo->byStep == 2)
-		{
-			// Spawn regen each 60 seconds and reset the steps.
-			pShipDefense->SpawnRegen("data/dungeon/ship_defense/wave4.txt");
-			pSpawnEventInfo->byStep = 0;
+			if (pSpawnEventInfo->uiCountSec % 10 == 0 && pSpawnEventInfo->byStep == 0)
+			{
+				// NOTE : Spawn regen each 10 seconds and set the next step.
+				pShipDefense->SpawnRegen("data/dungeon/ship_defense/wave4_1.txt");
+				pSpawnEventInfo->byStep = 1;
+			}
+			else if (pSpawnEventInfo->uiCountSec % 30 == 0 && pSpawnEventInfo->byStep == 1)
+			{
+				// NOTE : Spawn regen each 30 seconds and set the next step.
+				pShipDefense->SpawnRegen("data/dungeon/ship_defense/wave4_1.txt");
+				pSpawnEventInfo->byStep = 2;
+			}
+			else if (pSpawnEventInfo->uiCountSec % 60 == 0 && pSpawnEventInfo->byStep == 2)
+			{
+				// NOTE : Spawn regen each 60 seconds and reset the steps.
+				pShipDefense->SpawnRegen("data/dungeon/ship_defense/wave4.txt");
+				pSpawnEventInfo->byStep = 0;
+			}
 		}
 	}
 	break;
 	}
 
-	// Set monster victim to alliance character.
+	// NOTE : Set monster victim to alliance character.
 	pShipDefense->FindAllyCharacter();
 
-	// Prevent second counter from overflowing.
+	// NOTE : Prevent second counter from overflowing.
 	if (static_cast<uint64_t>(pSpawnEventInfo->uiCountSec) + 1 > UINT_MAX)
 		return 0;
 
-	// Increase second counter.
+	// NOTE : Increase second counter.
 	++pSpawnEventInfo->uiCountSec;
 
 	return PASSES_PER_SEC(1);
@@ -881,6 +908,51 @@ LPCHARACTER CShipDefense::Spawn(DWORD dwVNum, int iX, int iY, int iDir, bool bSp
 	return lpChar;
 }
 
+bool CShipDefense::CheckEmptyDeck()
+{
+	const LPSECTREE_MAP c_lpSectreeMap = GetSectreeMap();
+	if (c_lpSectreeMap == nullptr)
+	{
+		sys_err("CShipDefense::CheckEmptyDeck() - m_lMapIndex[%d] c_lpSectreeMap[nullptr]", m_lMapIndex);
+		return false;
+	}
+
+	std::map<VID, VID> mapMonsters;
+	auto FCountMonsters = [&mapMonsters](LPENTITY lpEntity)
+	{
+		if (lpEntity->IsType(ENTITY_CHARACTER) == true)
+		{
+			const LPCHARACTER c_lpChar = dynamic_cast<LPCHARACTER>(lpEntity);
+			if (c_lpChar && c_lpChar->IsMonster())
+			{
+				// NOTE : Ignore monster that shouldn't be counted.
+				switch (c_lpChar->GetRaceNum())
+				{
+				case ShipDefense::HYDRA1:
+				case ShipDefense::HYDRA2:
+				case ShipDefense::HYDRA3:
+				case ShipDefense::HYDRA_LEFT:
+				case ShipDefense::HYDRA_RIGHT:
+				case ShipDefense::MINI_HYDRA1:
+				case ShipDefense::MINI_HYDRA2:
+				case ShipDefense::MINI_HYDRA3:
+				case ShipDefense::HYDRA_EGG:
+				case ShipDefense::HYDRA_REWARD:
+				case ShipDefense::WOOD_REPAIR:
+					return;
+				}
+				mapMonsters[c_lpChar->GetVID()] = c_lpChar->GetVID();
+			}
+		}
+	};
+	c_lpSectreeMap->for_each(FCountMonsters);
+
+	if (mapMonsters.size() <= 0)
+		return true;
+
+	return false;
+}
+
 bool CShipDefense::SpawnRegen(const char* c_szFileName, bool bOnce)
 {
 	if (!c_szFileName)
@@ -1029,11 +1101,11 @@ void CShipDefense::Start()
 		return;
 	}
 
-	// Broadcast alliance health point to everyone.
+	// NOTE : Broadcast alliance health point to everyone.
 	CShipDefenseManager& rkShipDefenseMgr = CShipDefenseManager::Instance();
 	rkShipDefenseMgr.BroadcastAllianceHP(GetAllianceCharacter(), c_lpSectreeMap);
 
-	// Prepare the first wave.
+	// NOTE : Prepare the first wave.
 	PrepareWave(ShipDefense::WAVE1);
 }
 
@@ -1068,10 +1140,10 @@ bool CShipDefense::PrepareDeck()
 	return false;
 }
 
-// NOTE: Prepare the wave before it starts.
+// NOTE : Prepare the wave before it starts.
 void CShipDefense::PrepareWave(const BYTE c_byWave)
 {
-	// NOTE: Cancel all previous events when preparing a new wave.
+	// NOTE : Cancel all previous events when preparing a new wave.
 	CancelEvents();
 
 	const LPSECTREE_MAP c_lpSectreeMap = GetSectreeMap();
@@ -1081,8 +1153,8 @@ void CShipDefense::PrepareWave(const BYTE c_byWave)
 		return;
 	}
 
-	// NOTE: Prepare the waves first by sending a notice and cool down
-	// before starting the wave.
+	// NOTE : Prepare the waves first by sending a notice and
+	// cool down before starting the wave.
 	WaveEventInfo* pWaveEventInfo = AllocEventInfo<WaveEventInfo>();
 	pWaveEventInfo->pShipDefense = this;
 	pWaveEventInfo->bNextWave = false;
@@ -1092,7 +1164,7 @@ void CShipDefense::PrepareWave(const BYTE c_byWave)
 	{
 	case ShipDefense::WAVE1:
 	{
-		// Intimidate player with fake Hydra.
+		// NOTE : Intimidate player with fake Hydra.
 		{
 			m_mapUniqueCharacter.emplace(ShipDefense::UNIQUE_FAKE_HYDRA_POS, Spawn(ShipDefense::EVNumHelper::HYDRA_LEFT, 385, 373, 5));
 			ClearSpawnEventInfo* pClearSpawnEventInfo = AllocEventInfo<ClearSpawnEventInfo>();
@@ -1157,7 +1229,7 @@ void CShipDefense::PrepareWave(const BYTE c_byWave)
 	m_lpWaveEvent = event_create(WaveEvent, pWaveEventInfo, PASSES_PER_SEC(1));
 }
 
-// NOTE: Set wave after PrepareWave is called.
+// NOTE : Set wave after PrepareWave is called.
 void CShipDefense::SetWave(const BYTE c_byWave)
 {
 	CancelEvents();
@@ -1171,7 +1243,7 @@ void CShipDefense::SetWave(const BYTE c_byWave)
 
 	m_byWave = c_byWave;
 
-	// Spawns
+	// NOTE : Spawns
 	switch (c_byWave)
 	{
 	case ShipDefense::WAVE1:
@@ -1179,7 +1251,7 @@ void CShipDefense::SetWave(const BYTE c_byWave)
 	case ShipDefense::WAVE3:
 	case ShipDefense::WAVE4:
 	{
-		// Remove Barries
+		// NOTE : Remove Barries
 		RemoveBackBarriers();
 
 		char szRegenFileName[64];
@@ -1188,7 +1260,7 @@ void CShipDefense::SetWave(const BYTE c_byWave)
 
 		if (c_byWave == ShipDefense::WAVE1)
 		{
-			// Wave Event (Used for waiting for the first wave)
+			// NOTE : Wave Event (Used for waiting for the first wave)
 			WaveEventInfo* pWaveEventInfo = AllocEventInfo<WaveEventInfo>();
 			pWaveEventInfo->pShipDefense = this;
 			pWaveEventInfo->bNextWave = true;
@@ -1206,7 +1278,7 @@ void CShipDefense::SetWave(const BYTE c_byWave)
 		if (c_byWave == ShipDefense::WAVE4)
 			SpawnMiniHydra(ShipDefense::EVNumHelper::MINI_HYDRA3, 4);
 
-		// Spawn Event
+		// NOTE : Spawn Event
 		SpawnEventInfo* pSpawnEventInfo = AllocEventInfo<SpawnEventInfo>();
 		pSpawnEventInfo->pShipDefense = this;
 		pSpawnEventInfo->byWave = c_byWave;
@@ -1217,7 +1289,7 @@ void CShipDefense::SetWave(const BYTE c_byWave)
 	break;
 	}
 
-	// Laser Event
+	// NOTE : Laser Event
 	switch (c_byWave)
 	{
 	case ShipDefense::WAVE2:
@@ -1231,7 +1303,7 @@ void CShipDefense::SetWave(const BYTE c_byWave)
 	break;
 	}
 
-	// Set monster victim to alliance character.
+	// NOTE : Set monster victim to alliance character.
 	FindAllyCharacter();
 }
 
@@ -1421,7 +1493,7 @@ bool CShipDefenseManager::Create(const LPCHARACTER c_lpChar)
 
 	const DWORD c_dwLeaderPID = GetLeaderPID(c_lpChar, true/*isLeader*/);
 
-	// Check if the instance is already prepared.
+	// NOTE : Check if the instance is already prepared.
 	switch (GetState(c_dwLeaderPID))
 	{
 	case STATE_CREATE:
@@ -1430,7 +1502,7 @@ bool CShipDefenseManager::Create(const LPCHARACTER c_lpChar)
 		return false;
 	}
 
-	// Create Private Map
+	// NOTE : Create Private Map
 	long lPrivateMapIndex = SECTREE_MANAGER::instance().CreatePrivateMap(ShipDefense::EMapIndex::SHIP_MAP_INDEX);
 	if (!lPrivateMapIndex)
 	{
@@ -1438,18 +1510,29 @@ bool CShipDefenseManager::Create(const LPCHARACTER c_lpChar)
 		return false;
 	}
 
-	// Create Instance
+	// NOTE : Create Instance
 	CShipDefense* pShipDefense = new CShipDefense(lPrivateMapIndex, c_dwLeaderPID);
 	if (pShipDefense != nullptr)
 	{
-		// Insert Ship Defense Map
+		// NOTE : Insert Ship Defense Map
 		m_mapShipDefense.insert(std::make_pair(c_dwLeaderPID, pShipDefense));
 
 		const LPPARTY c_lpParty = c_lpChar->GetParty();
 		if (c_lpParty != nullptr)
+		{
+			if (ShipDefense::REQUIRE_COOLDOWN == true)
+			{
+				auto FSetCooldown = [&c_lpParty](const LPCHARACTER c_lpChar)
+				{
+					if (c_lpChar != nullptr)
+						c_lpChar->SetQuestFlag("ship_defense.cooldown", std::time(nullptr) + ShipDefense::COOLDOWN);
+				};
+				c_lpParty->ForEachOnlineMember(FSetCooldown);
+			}
 			c_lpParty->ChatPacketToAllMember(CHAT_TYPE_NOTICE, LC_TEXT("The 'Ship Defence' dungeon is ready. The fisherman will let you board now."));
+		}
 
-		// Warp to Private Map
+		// NOTE : Warp to Private Map
 		PIXEL_POSITION SPos = { 0, 0, 0 };
 		SECTREE_MANAGER::Instance().GetRecallPositionByEmpire(ShipDefense::EMapIndex::SHIP_MAP_INDEX, 0, SPos);
 
@@ -1545,7 +1628,7 @@ bool CShipDefenseManager::IsRunning(const LPCHARACTER c_lpChar)
 	return false;
 }
 
-// NOTE: Used to check for party leader pid or player pid, based on the instance style.
+// NOTE : Used to check for party leader pid or player pid, based on the instance style.
 DWORD CShipDefenseManager::GetLeaderPID(const LPCHARACTER c_lpChar, const bool c_bIsLeader)
 {
 	if (c_lpChar == nullptr)
@@ -1555,18 +1638,15 @@ DWORD CShipDefenseManager::GetLeaderPID(const LPCHARACTER c_lpChar, const bool c
 		return 0;
 
 	DWORD dwLeaderPID = c_lpChar->GetPlayerID();
+	const LPPARTY c_lpParty = c_lpChar->GetParty();
 
-	if (ShipDefense::NEED_PARTY == true)
+	if (c_lpParty != nullptr)
 	{
-		const LPPARTY c_pParty = c_lpChar->GetParty();
-		if (c_pParty == nullptr)
-			return 0;
-
 		if (c_bIsLeader)
-			if (c_lpChar != c_pParty->GetLeaderCharacter())
+			if (c_lpChar != c_lpParty->GetLeaderCharacter())
 				return 0;
 
-		dwLeaderPID = c_pParty->GetLeaderPID();
+		dwLeaderPID = c_lpParty->GetLeaderPID();
 	}
 
 	return dwLeaderPID;
@@ -1620,17 +1700,17 @@ void CShipDefenseManager::SetAllianceHPPct(const LPCHARACTER c_lpRepairChar, con
 		if (lpUniqueChar == nullptr)
 			return;
 
-		// Set alliance health points.
+		// NOTE : Set alliance health points.
 		uint64_t iHP = (ShipDefense::WOOD_REPAIR_PCT * lpUniqueChar->GetMaxHP()) / 100;
 		lpUniqueChar->SetHP(lpUniqueChar->GetHP() + iHP);
 
-		// Notice players of alliance health points.
+		// NOTE : Notice players of alliance health points.
 		pShipDefense->NoticeByType(NOTICE_MAST_HP);
 
-		// Add stun affect.
+		// NOTE : Add stun affect.
 		c_lpRepairChar->AddAffect(AFFECT_STUN, POINT_NONE, 0, AFF_STUN, ShipDefense::WOOD_REPAIR_STUN_DELAY, 0, true);
 
-		// Broadcast alliance health points to players.
+		// NOTE : Broadcast alliance health points to players.
 		BroadcastAllianceHP(lpUniqueChar, c_lpSectreeMap);
 	}
 }
@@ -1705,7 +1785,7 @@ void CShipDefenseManager::Land(const LPCHARACTER c_lpChar)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Triggers
+// NOTE : Triggers
 bool CShipDefenseManager::CanAttack(LPCHARACTER lpCharAttacker, LPCHARACTER lpCharVictim)
 {
 	if (lpCharAttacker == nullptr || lpCharVictim == nullptr)
@@ -1798,7 +1878,7 @@ bool CShipDefenseManager::OnKill(LPCHARACTER lpDeadChar, LPCHARACTER lpKillerCha
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// VNum Helpers
+// NOTE : VNum Helpers
 bool CShipDefenseManager::IsHydra(const DWORD c_dwVNum)
 {
 	switch (c_dwVNum)

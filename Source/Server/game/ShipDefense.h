@@ -20,6 +20,7 @@ namespace ShipDefense
 		NEED_PARTY = true,
 		NEED_TICKET = true,
 		SPAWN_WOOD_REPAIR = true,
+		REQUIRE_COOLDOWN = true
 	};
 
 	enum EProbability : WORD
@@ -105,6 +106,7 @@ namespace ShipDefense
 		EGG_SPAWN_DURATION = 8,
 		EFFECT_SHELTER_DURATION = 10,
 		WOOD_REPAIR_STUN_DELAY = 5,
+		COOLDOWN = 1800, // 30 minutes
 	};
 
 	enum EBarrierWall : BYTE
@@ -155,6 +157,8 @@ public:
 	void JumpToPosition(const long c_lMapIndex, const long c_lXPos, const long c_lYPos);
 	void NoticeByType(const ShipDefense::ENoticeType c_eType);
 
+	bool CheckEmptyDeck();
+
 	// Spawns
 	LPCHARACTER Spawn(DWORD dwVNum, int iX, int iY, int iDir, bool bSpawnMotion = false);
 	bool SpawnRegen(const char* c_szFileName, bool bOnce = true);
@@ -194,7 +198,7 @@ public:
 	LPSECTREE_MAP GetSectreeMap() const { return m_lpSectreeMap; }
 
 	// Unique Characters
-	// NOTE: The map contains each character with their unique position.
+	// NOTE : The map contains each character with their unique position.
 	using UNIQUE_CHAR_POSITION = BYTE;
 	using UniqueCharacterMap = std::map<UNIQUE_CHAR_POSITION, LPCHARACTER>;
 	LPCHARACTER GetUniqueCharacter(const BYTE c_byUniqueID);

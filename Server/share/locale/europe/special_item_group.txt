@@ -1,3 +1,12 @@
+Group	TicketGroup
+{
+	Vnum	10033
+	1	71095	1	1
+	2	71174	1	1
+	3	71175	1	1
+	4	76019	1	1
+}
+
 ###############################################################################
 # Reference: https://it-wiki.metin2.gameforge.com/index.php/Baule_di_Idra
 # Note: Before inserting this group into your original file, please check that

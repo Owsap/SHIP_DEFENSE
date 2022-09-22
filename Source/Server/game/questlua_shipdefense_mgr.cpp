@@ -133,6 +133,12 @@ namespace quest
 		return 1;
 	}
 
+	int ship_defense_mgr_require_cooldown(lua_State* L)
+	{
+		lua_pushboolean(L, ShipDefense::REQUIRE_COOLDOWN);
+		return 1;
+	}
+
 	int ship_defense_mgr_set_alliance_hp_pct(lua_State* L)
 	{
 		if (!lua_isnumber(L, 1))
@@ -166,6 +172,7 @@ namespace quest
 			{ "need_party", ship_defense_mgr_need_party },
 			{ "need_ticket", ship_defense_mgr_need_ticket },
 			{ "spawn_wood_repair", ship_defense_mgr_spawn_wood_repair },
+			{ "require_cooldown", ship_defense_mgr_require_cooldown },
 			{ "set_alliance_hp_pct", ship_defense_mgr_set_alliance_hp_pct },
 			{ nullptr, nullptr }
 		};

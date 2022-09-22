@@ -8,4 +8,5 @@ ship_defense_mgr.is_running
 ship_defense_mgr.need_party
 ship_defense_mgr.need_ticket
 ship_defense_mgr.spawn_wood_repair
+ship_defense_mgr.require_cooldown
 ship_defense_mgr.set_alliance_hp_pct
